@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="HandsOn10.Api/HandsOn10.Api.csproj" />
+  <Project Path="HandsOn10.Tests/HandsOn10.Tests.csproj" />
+</Solution>

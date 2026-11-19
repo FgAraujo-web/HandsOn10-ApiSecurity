@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<PropertyGroup><TargetFramework>net10.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings>  <UserSecretsId>ff73becd-7fad-4225-907f-ef4b478be59a</UserSecretsId>
+  </PropertyGroup>
+<ItemGroup>
+<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
+<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
+<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.12" />
+<PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.21" />
+</ItemGroup>
+</Project>

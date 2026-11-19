@@ -1,0 +1,30 @@
+using System.Text;
+using HandsOn10.Api.Data;
+using HandsOn10.Api.Models;
+using HandsOn10.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+var builder=WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+var provider=builder.Configuration["DatabaseProvider"] ?? "Sqlite";
+if(provider.Equals("SqlServer",StringComparison.OrdinalIgnoreCase)) builder.Services.AddDbContext<AppDbContext>(o=>o.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+else builder.Services.AddDbContext<AppDbContext>(o=>o.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddScoped<IPasswordHasher<AppUser>,PasswordHasher<AppUser>>();
+builder.Services.AddScoped<TokenService>();
+var jwtKey=builder.Configuration["Jwt:Key"];
+if(string.IsNullOrWhiteSpace(jwtKey) || Encoding.UTF8.GetByteCount(jwtKey)<32) throw new InvalidOperationException("Configure Jwt:Key com pelo menos 32 bytes (dotnet user-secrets set Jwt:Key ...). Nunca guarde a chave no Git.");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o=> {
+ o.TokenValidationParameters=new TokenValidationParameters { ValidateIssuer=true,ValidIssuer=builder.Configuration["Jwt:Issuer"],ValidateAudience=true,ValidAudience=builder.Configuration["Jwt:Audience"],ValidateLifetime=true,ClockSkew=TimeSpan.FromSeconds(30),ValidateIssuerSigningKey=true,IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)) };
+});
+builder.Services.AddAuthorization(o=>o.AddPolicy("AdminsOnly",p=>p.RequireRole("Admin")));
+var app=builder.Build();
+if(!app.Environment.IsDevelopment()) app.UseHsts();
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+using(var scope=app.Services.CreateScope()) await SeedData.InitializeAsync(scope.ServiceProvider.GetRequiredService<AppDbContext>(),scope.ServiceProvider.GetRequiredService<IPasswordHasher<AppUser>>());
+app.Run();
+public partial class Program { }

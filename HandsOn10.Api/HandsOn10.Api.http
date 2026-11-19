@@ -1,0 +1,15 @@
+@host = https://localhost:7210
+### Saúde pública
+GET {{host}}/api/health
+### Login (copiar access_token para a variável abaixo)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{"username":"ana","password":"Demo123!ChangeMe"}
+### Pedido próprio (substituir TOKEN)
+@token = TOKEN
+GET {{host}}/api/pedidos/101
+Authorization: Bearer {{token}}
+### Tentativa BOLA bloqueada
+GET {{host}}/api/pedidos/102
+Authorization: Bearer {{token}}
